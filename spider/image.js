@@ -16,31 +16,31 @@ var dir = __dirname + '/images';
 var links = [];
 
 // 创建目录
-mkdirp(dir, function(err) {
-    if(err){
+mkdirp(dir, function (err) {
+    if (err) {
         console.log(err);
     }
 });
 
 // 发送请求
-function imageDownLoad(url,i){
-    request(url, function(error, response, body) {
-        if(!error && response.statusCode == 200) {
+function imageDownLoad(url, i) {
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
             var $ = cheerio.load(body);
-            $('.photo-list-padding a img').each(function() {
+            $('.photo-list-padding a img').each(function () {
                 var src = $(this).attr('src');
                 // src = src.replace(/t_s208x130c5/, 't_s960x600c5');
-                if(src){
-                    download(src, dir, Math.floor(Math.random()*100000) + src.substr(-4,4),i)
+                if (src) {
+                    download(src, dir, Math.floor(Math.random() * 100000) + src.substr(-4, 4), i)
                 };
             });
         }
     });
 }
 
-for(let i=1;i<=100;i++){
-    let url  = 'http://desk.zol.com.cn/meinv/1920x1080/'+i+'.html';
-    imageDownLoad(url,i)
+for (let i = 1; i <= 100; i++) {
+    let url = 'http://desk.zol.com.cn/meinv/1920x1080/' + i + '.html';
+    imageDownLoad(url, i)
 }
 
 // console.log(links)
@@ -57,23 +57,26 @@ for(let i=1;i<=100;i++){
 
 
 // 下载方法
-var download = function(url, dir, filename,foldName){
-    request.head(url, function(err, res, body){
+var download = function (url, dir, filename, foldName) {
+    request.head(url, function (err, res, body) {
         console.log(err)
-        if(res.statusCode==200&&!err){
+        if (res.statusCode == 200 && !err) {
             request(url)
-            .on('error',(error)=>{
-                console.log(error)
-            })
-            .pipe(fs.createWriteStream(dir + "/"+ foldName +'/'+ filename))
-            
-            .on('close',()=>{
-                var bu = fs.createReadStream(fpath, {start: 0, end: 262});
-                bu.on('data', function(chunk) {
-                    console.log(chunk.toString());//这是结果
+                .on('error', (error) => {
+                    console.log(error)
+                })
+                .pipe(fs.createWriteStream(dir + "/" + foldName + '/' + filename))
+
+                .on('close', () => {
+                    var bu = fs.createReadStream(fpath, {
+                        start: 0,
+                        end: 262
+                    });
+                    bu.on('data', function (chunk) {
+                        console.log(chunk.toString()); //这是结果
+                    });
                 });
-            });
         }
-        
+
     });
 };
