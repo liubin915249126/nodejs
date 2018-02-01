@@ -17,10 +17,10 @@ async function getTotal(callback) {
     });
     console.log(total);
     //循环每一页
-    for(let i=2;i<total;i++){
+    for(let i=2;i<3;i++){
         let currentUrl = "http://www.meizitu.com/a/more_"+i+".html";
         await page.goto(currentUrl);
-        const urls = await page.evaluate(e=>{
+        let urls = await page.evaluate(e=>{
             let wraps = Array.from($('#maincontent').find('.wp-item'));
             let urls = wraps.map((item)=>{
                let alt =  $(item).find('img').attr('alt');
@@ -31,11 +31,10 @@ async function getTotal(callback) {
             });
             return urls;
         })
-        for(let loopIndex=0;loopIndex<urls.length;loopIndex++){
-          let item = urls[loopIndex];
-          let index = loopIndex;
-          await page.goto(item.url);
-            const imgUrls = await page.evaluate(e=>{
+        //循环每一目
+        urls.forEach(async (item,index)=>{
+            await page.goto(item.url);
+            let imgUrls = await page.evaluate(e=>{
                 let imgs = Array.from($('#picture').find("img"))
                 return imgUrls = imgs.map((item)=>{
                     let imgUrl = $(item).attr('src');
@@ -46,17 +45,17 @@ async function getTotal(callback) {
                 })
             });
             imgUrls.forEach((urlObj,cindex)=>{
-                let url = urlObj.imgUrl;
-                let alt = urlObj.imgAlt;
-                let typeArr = url.split('.');
-                let type = typeArr[typeArr.length-1];
-                let urlArrObj = {
-                    url,index:cindex,name:alt,type,pindex:index,page:i
-                }
-                //allUrls.push(urlArrObj);
-                loadImg(url,cindex,alt,type,index,i)
+               let url = urlObj.imgUrl;
+               let alt = urlObj.imgAlt;
+               let typeArr = url.split('.');
+               let type = typeArr[typeArr.length-1];
+               let urlArrObj = {
+                   url,index:cindex,name:alt,type,pindex:index,page:i
+               }
+               allUrls.push(urlArrObj);
+               //loadImg(url,cindex,alt,type,index,i)
             })
-        }
+        })
     };
     callback(allUrls)
     return new Promise((reslove,reject)=>{
@@ -69,21 +68,25 @@ async function getTotal(callback) {
 function loadImg(url,index,name,type,pindex,page) {
     axios.get(url,{responseType: 'stream'})
         .then((res)=>{
-            let innerPath = '第'+page+'页第'+pindex+'目/';
+            let innerPath = '第'+page+'页' + '第'+pindex+'目/';
             let path = __dirname+'/dist/'+innerPath
             if(!fs.exists(path)){
                 fs.mkdir(path,()=>{
                     res.data.pipe(fs.createWriteStream(path+name+'.'+type));
                 });
             }else{
-
-            } 
+                // res.data.pipe(fs.createWriteStream(path+name+'.'+type));
+            }
+            
         })
 }
 
 
 getTotal((allUrls)=>{
-  console.log(allUrls);
+  allUrls.forEach((item)=>{
+    let {url,index,name,type,pindex,page} = item;
+    loadImg(url,index,name,type,pindex,page);
+  })
 }).then(()=>{
 
 }).catch((err)=>{
