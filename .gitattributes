@@ -1,4 +1,4 @@
-*.css linguist-language=nodejs
-*.less linguist-language=nodejs
-*.js linguist-language=nodejs
-*.html linguist-language=nodejs
+*.css linguist-language=javascript
+*.less linguist-language=javascript
+*.js linguist-language=javascript
+*.html linguist-language=javascript
