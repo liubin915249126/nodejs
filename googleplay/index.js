@@ -52,16 +52,16 @@ async function getPage(records){
     await browser.close();
     console.log('检索完毕',list.length+'个被下架')
 }
-getData(api);
+ // getData(api);
  // getPage('com.yinshan.program.banda1');
 
-function schedule(){
+function scheduleFun(){
     const rule    = new schedule.RecurrenceRule();
     rule.hour =10;
-    rule.minute =0;
+    rule.minute =30;
     rule.second =0;
     schedule.scheduleJob(rule, function(){  
         getData(api);
     });
 }
-schedule();
+scheduleFun();
