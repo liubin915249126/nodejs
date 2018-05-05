@@ -11,5 +11,9 @@
     await browser.close();//关闭浏览器实例
   ```
 >
+#### node 定时任务 node-schedule
+>
+  [node-schedule](https://github.com/node-schedule/node-schedule)
+>
 
 #### 编写自己的node-cli
