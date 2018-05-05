@@ -19,7 +19,7 @@ function postEmail(datas){
                 auth: {
                     user: 'bin.liu@starwin.com',
                     // 这里密码不是qq密码，是你设置的smtp授权码
-                    pass: 'Len.liu',
+                    pass: 'Len.liu/6911',
                 }
             });
             
