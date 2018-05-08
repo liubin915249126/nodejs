@@ -26,7 +26,7 @@ function postEmail(datas){
             // setup email data with unicode symbols
             let mailOptions = {
                 from: 'bin.liu@starwin.com', // sender address
-                to: 'bin.liu@starwin.com', // list of receivers
+                to: 'bin.liu@starwin.com,min.liao@starwin.com,yaqi.gao@starwin.com,lin.chen@starwin.com', // list of receivers
                 subject: 'google play下架的应用 ', // Subject line
                 // text: 'Hello world222?', // plain text body
                 html, // html body
