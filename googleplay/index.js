@@ -25,6 +25,7 @@ async function getPage(records){
     const page = await browser.newPage();
     console.log(records.length)
     const list = [];
+    const onlist = [];
     const errRecords = [];
     for(let index=0;index<records.length;index++){
         const { packageName, status } = records[index];
@@ -40,6 +41,8 @@ async function getPage(records){
                 });
                 if(result){
                   list.push(records[index]);  
+                }else{
+                  onlist.push(records[index]);
                 }
             } catch (error) {
                 errRecords.push(records[index]);
@@ -48,20 +51,20 @@ async function getPage(records){
         }
     }
     
-    postEmail(list);
+    postEmail(list, onlist);
     await browser.close();
     console.log('检索完毕',list.length+'个被下架')
 }
-getData(api);
+ // getData(api);
  // getPage('com.yinshan.program.banda1');
 
-function schedule(){
-    const rule    = new schedule.RecurrenceRule();
+function scheduleFun(){
+    const rule = new schedule.RecurrenceRule();
     rule.hour =10;
-    rule.minute =0;
+    rule.minute =39;
     rule.second =0;
     schedule.scheduleJob(rule, function(){  
         getData(api);
     });
 }
-schedule();
+scheduleFun();
