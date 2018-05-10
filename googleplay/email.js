@@ -10,6 +10,8 @@ function postEmail(datas, onDatas){
             html = `${html}<b>${data.name}</b><br/>`;
         })
         html = `${html}</div>`;    
+    }else{
+        html = `${html}<div>今天没有产品被下架</div>`
     }
     if(Array.isArray(onDatas)&&onDatas.length>0){
         html = `${html}<div>没被下架的应用</div><div>`
