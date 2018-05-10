@@ -1,22 +1,25 @@
 'use strict';
 
 const nodemailer = require('nodemailer');
+const {baseUrl, mgtBaseUrl} = require('./index.js');
 
 function postEmail(datas, onDatas){
     let html = '';
     if(Array.isArray(datas)&&datas.length>0){
-        html = `${html}<div>以下应用被下架</div><div>`
+        html = `${html}<div>以下应用被下架</div>(${datas.length}个)<div>`
         datas.forEach((data)=>{
-            html = `${html}<b>${data.name}</b><br/>`;
+            const { packageName, id } = data;
+            html = `${html}<b><a href="${baseUrl}${packageName}" title="googleplay">${data.name}</a></b>  <a href="${mgtBaseUrl}${id}">(mgt)</a><br/>`;
         })
-        html = `${html}</div>`;    
+        html = `${html}</div>`;
     }else{
         html = `${html}<div>今天没有产品被下架</div>`
     }
     if(Array.isArray(onDatas)&&onDatas.length>0){
-        html = `${html}<div>没被下架的应用</div><div>`
+        html = `${html}<div>没被下架的应用</div>(${onDatas.length}个)<div>`
         onDatas.forEach((data)=>{
-            html = `${html}<b>${data.name}</b><br/>`;
+            const { packageName, id } = data;
+            html = `${html}<b><a href="${baseUrl}${packageName}" title="googleplay">${data.name}</a></b>  <a href="${mgtBaseUrl}${id}">(mgt)</a><br/>`;
         })
         html = `${html}</div>`;
     }
@@ -38,7 +41,8 @@ function postEmail(datas, onDatas){
         let mailOptions = {
             from: 'bin.liu@starwin.com', // sender address
             to: 'bin.liu@starwin.com, min.liao@starwin.com, yaoyi.wang@starwin.com, lin.chen@starwin.com, jialing.hu@starwin.com', // list of receivers
-            subject: 'google play下架的应用 ', // Subject line
+            // to: 'bin.liu@starwin.com', // list of receivers
+            subject: '贷超APP监控', // Subject line
             // text: 'Hello world222?', // plain text body
             html, // html body
         };
