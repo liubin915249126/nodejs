@@ -1,12 +1,18 @@
 const puppeteer = require('puppeteer');
 const axios = require('axios');
-const {postEmail} = require('./email.js');
+
 const schedule = require("node-schedule");
 
 // const api = 'http://admin.uuang.co.id/admin/loan/list?current=0&size=1000&descs%5B0%5D=priority'
 const api = 'http://admin.uuang.co.id/admin/loan/list?current=0&size=10000&descs%5B0%5D=priority'
 const baseUrl = "https://play.google.com/store/apps/details?id="
+const mgtBaseUrl = "http://admin.uuang.co.id/#/loan/"
 
+module.exports = {
+    baseUrl: baseUrl,
+    mgtBaseUrl: mgtBaseUrl
+}
+const {postEmail} = require('./email.js');
 function getData(url){
    axios.get(url)
    .then(((res)=>{
@@ -55,16 +61,18 @@ async function getPage(records){
     await browser.close();
     console.log('检索完毕',list.length+'个被下架')
 }
- // getData(api);
- // getPage('com.yinshan.program.banda1');
+//  getData(api);
+// getPage('com.yinshan.program.banda1');
 
 function scheduleFun(){
     const rule = new schedule.RecurrenceRule();
     rule.hour =10;
-    rule.minute =39;
+    rule.minute =30;
     rule.second =0;
     schedule.scheduleJob(rule, function(){  
         getData(api);
     });
 }
 scheduleFun();
+
+
