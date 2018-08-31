@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const {writeFile} = require('./write');
 
 
-const articleUrl = "https://segmentfault.com/a/1190000015779297"
+const articleUrl = "https://segmentfault.com/a/1190000016155973"
 
 const transferUrl =  "https://tool.lu/markdown/"
 
