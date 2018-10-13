@@ -1,0 +1,505 @@
+<p><code>Promise</code>是异步编程的解决方案之一，相比传统的回调和事件机制更为合理和强大。</p>
+<h2 id="1">1 场景举例</h2>
+<p>某天，突发奇想，发了封邮件给木匠师傅，定制一个如此这般的家具。<br />
+木匠有求必应，即是说，邮件一旦发出就得到了他的承诺(<code>Promise</code>)：在下一定尽力。</p>
+<p>邮件中规定好了结果的通知方式：<br />
+成功了，直接将家具(<code>res</code>)邮递(<code>resolve</code>)过来。<br />
+失败了，直接将失败的信息(<code>err</code>)发邮件(<code>reject</code>)过来。</p>
+<pre><code>let P = new Promise((resolve, reject) =&gt; {
+  if (/*最终的结果*/) {
+    resolve('家具'); // 成功，直接邮递家具。
+  } else {
+    reject('失败的原因'); // 失败，发邮件告知失败原因。
+  }
+});
+</code></pre>
+<p>邮件发出等价于得到木匠的承诺<code>P</code>，之后，能做的只有等待(<code>then</code>)。</p>
+<pre><code>P.then(res =&gt; {
+  console.log('成功，收到家具。此刻心情：开心。');
+}, err =&gt; {
+  console.log('失败，收到原因。此刻心情：失落。');
+});
+</code></pre>
+<h2 id="2">2 行为特征</h2>
+<h3 id="21">2.1 状态</h3>
+<p>每个<code>Promise</code>有三种状态：进行中(<code>pending</code>)、已成功(<code>resolved</code>)和已失败(<code>rejected</code>)。<br />
+创建即进入<code>pending</code>状态，在传入方法中一旦调用了<code>resolve/reject</code>方法，最终状态便变成<code>resolved/rejected</code>。<br />
+一旦变成结果状态，即更改成<code>resolved/rejected</code>，状态便被冷冻，不能再被更改。</p>
+<p><strong>状态容器</strong><br />
+<code>Promise</code>实质是个状态容器。<br />
+得到结果状态后，任何时候都可以访问到此状态。<br />
+这与事件订阅通知不同，如果订阅发生在通知之后，订阅是不起作用的。</p>
+<p><strong>状态不可控</strong><br />
+一旦创建<code>Promise</code>，便会立刻执行，无法取消。<br />
+处于<code>pending</code>状态时，无法得知进程具体的信息，比如完成百分比（虽然可以自行设置回调进行通知）。</p>
+<p><strong>失败的状态</strong><br />
+成功的状态只能由<code>resolve</code>方法转成。<br />
+失败的状态可以由<code>reject</code>方法转成，也可以由抛出错误间接转成。</p>
+<pre><code>三者都会正常的打印出失败的信息。
+
+new Promise((resolve, reject) =&gt; {
+  reject('error');
+}).catch(console.log); // error
+
+new Promise((resolve, reject) =&gt; {
+  a;
+}).catch(console.log); // ReferenceError: a is not defined
+
+new Promise((resolve, reject) =&gt; {
+  throw 'error';
+}).catch(console.log); // Error: error
+</code></pre>
+<p><strong>错误的报告机制</strong><br />
+如果失败状态没有接收失败的回调函数接收，<code>Promise</code>会抛出错误。<br />
+这里的抛出错误，仅仅是在控制台显示之类的提示，不会终止程序的进程。</p>
+<pre><code>先打印出 'err' ，再报错。
+
+new Promise((resolve, reject) =&gt; {
+  reject();
+});
+
+new Promise((resolve, reject) =&gt; {
+  reject('err');
+}).then(() =&gt; {}, console.log);
+</code></pre>
+<p>一旦<code>Promise</code>设置了失败回调函数，即便是代码执行错误，也会自行消化，不外报。</p>
+<pre><code>虽然 a 未被定义，但全程安静，无槽点。
+
+new Promise((resolve, reject) =&gt; {
+  a;
+}).then(() =&gt; {}, () =&gt; {});
+</code></pre>
+<h3 id="22">2.2 执行顺序</h3>
+<p><strong>传入方法</strong><br />
+创建<code>Promise</code>的同时也会执行传入方法。<br />
+传入方法不会因为调用了<code>resolve/reject</code>便终止执行，所以更优的方式是<code>retrun resolve/reject</code>。</p>
+<pre><code>打印出 1 2 。
+
+new Promise((resolve, reject) =&gt; {
+  console.log(1);
+  resolve();
+  console.log(2);
+});
+</code></pre>
+<p><strong>回调方法</strong><br />
+立即得到结果的<code>Promise</code>，其回调函数依然会晚于本轮事件执行。<br />
+这种后执行不同于<code>setTimeout</code>的将执行函数<code>push</code>到执行栈，而是将执行函数放到本轮的末尾。</p>
+<pre><code>得到的结果是：1 2 3 4 5 6 。
+
+console.log(1);
+
+let p = new Promise((resolve, reject) =&gt; {
+  console.log(2);
+  resolve();
+});
+
+setTimeout(() =&gt; {
+  console.log(5);
+});
+
+p.then(function() {
+  console.log(4);
+});
+
+setTimeout(() =&gt; {
+  console.log(6);
+});
+
+console.log(3);
+</code></pre>
+<h3 id="23">2.3 结果参数</h3>
+<p>传入<code>reject</code>的参数，一般是字符串或<code>Error</code>实例，表示抛出的错误。<br />
+传入<code>resolve</code>的参数，一般是相应的<code>JSON</code>数据等，表示得到的数据。</p>
+<p>传入<code>resolve</code>的参数，还可以是另一个<code>Promise</code>实例。<br />
+这时，只有当内层的<code>Promise</code>结束后，外层的<code>Promise</code>才会结束。</p>
+<pre><code>过两秒后，打印出 2000 。
+
+new Promise((resolve, reject) =&gt; {
+  resolve(createPromise());
+}).then(console.log);
+
+function createPromise() {
+  return new Promise((resolve, reject) =&gt; {
+    setTimeout(() =&gt; {
+      resolve(2000);
+    }, 2000);
+  });
+}
+</code></pre>
+<p>在这种情况下，如果内层失败，并不等于传递<code>Error</code>实例给<code>resolve</code>不同。<br />
+前者是内层<code>Promise</code>抛出了错误将被外层捕获，后者仅仅是参数为一个<code>Error</code>实例。</p>
+<pre><code>内层失败的信息，被外层捕获。过两秒，打印出 '2' 2000 。
+
+new Promise((resolve, reject) =&gt; {
+  resolve(createPromise());
+}).then(res =&gt; {
+  console.log('1', res);
+}, err =&gt; {
+  console.log('2', err);
+});
+
+function createPromise() {
+  return new Promise((resolve, reject) =&gt; {
+    setTimeout(() =&gt; {
+      reject(2000);
+    }, 2000);
+  });
+}
+</code></pre>
+<h2 id="3">3 实例方法</h2>
+<h3 id="31then">3.1 then()</h3>
+<p>该方法可传入两个，分别对应成功/失败时的回调函数。<br />
+该方法返回的是一个新的<code>Promise</code>对象，这也是可以使用链式（<code>.then.then...</code>）的原因。</p>
+<pre><code>let p1 = new Promise(resolve =&gt; resolve(2000));
+let p2 = p1.then(() =&gt; {}, () =&gt; {});
+console.log(p1 === p2); // false
+</code></pre>
+<p><strong>return</strong><br />
+链式中，后者的状态取决于前者（成功/失败）的回调函数中返回（<code>return</code>）的结果。<br />
+如果没有返回，相当返回一个成功的状态，值为<code>undefined</code>。<br />
+如果返回为<code>Promise</code>对象，后者的状态由该对象的最终状态决定。<br />
+如果返回为非<code>Promise</code>对象的数据，相当返回一个成功的状态，值为此数据。<br />
+如果前者执行时抛出了错误，相当是返回一个失败的状态，值为此错误。</p>
+<pre><code>依次打印出：
+1 res 2000
+2 res undefined
+3 res 3000
+4 err 4000
+
+new Promise(resolve =&gt; resolve(2000))
+.then(res =&gt; {
+  console.log('1 res', res);
+})
+.then(res =&gt; {
+  console.log('2 res', res);
+  return 3000;
+})
+.then(res =&gt; {
+  console.log('3 res', res);
+  return new Promise((resolve, reject) =&gt; {
+    reject(4000);
+  });
+})
+.then(console.log, err =&gt; {
+  console.log('4 err', err);
+});
+</code></pre>
+<p><strong>状态的传递</strong><br />
+在链式中，如果前者的状态没有被后者捕获，会一直（像）冒泡到被捕获为止。<br />
+状态被捕获后便消失，这之后的的状态由当前<code>then</code>返回的状态决定，之后重复。</p>
+<pre><code>依次打印出：
+2 res 2000
+3 res 3000
+
+new Promise(resolve =&gt; resolve(2000))
+.then(null, err =&gt; {
+    console.log('1 err', err);
+})
+.then(res =&gt; {
+  console.log('2 res', res);
+  return 3000;
+})
+.then(res =&gt; {
+  console.log('3 res', res);
+});
+</code></pre>
+<h3 id="32catch">3.2 catch()</h3>
+<p>用于指定发生错误时的回调函数，等价于：<code>.then(null, callback)</code>。<br />
+其表现与<code>then</code>一致，比如返回新的<code>Promise</code>，状态的继承和传递等等。</p>
+<p>一般推荐使用<code>catch</code>而不是<code>then</code>的第二个方法接收错误。<br />
+因为<code>catch</code>可以捕获<code>then</code>自身的错误，也更接近同步的写法（<code>try/catch</code>）。</p>
+<pre><code>new Promise(() =&gt; {})
+.then(() =&gt; {
+  ...
+})
+.catch(() =&gt; {
+  ...
+});
+</code></pre>
+<h3 id="33finally">3.3 finally()</h3>
+<p>用于<code>Promise</code>处理结束后的收尾工作。<br />
+传入其的回调函数不会接受任何参数，意味着没有办法知道<code>Promise</code>的结果。<br />
+这也正表明，<code>finally</code>里面的操作与状态无关，不依赖<code>Promise</code>的处理结果。</p>
+<p>其本质和<code>catch</code>一样，也是<code>then</code>方法的变种。<br />
+不过其仅仅是状态的传递者，只会返回原状态，不会接收状态和创建新的状态。</p>
+<pre><code>p.finally(() =&gt; {
+  // codes...
+});
+
+--- 等价于
+
+p.then(res =&gt; {
+  // codes...
+  return res; // 将原成功状态返回
+}, err =&gt; {
+  // codes...
+  throw err; // 将原失败状态返回
+});
+</code></pre>
+<p><strong>示例</strong><br />
+在请求数据时，我们会显示加载图案，请求完成后无论结果都要隐藏此图案。</p>
+<pre><code>一般，一个完整的 Promise 的结构会如下。
+
+showLoading = true;
+
+new Promise((resolve, reject) =&gt; {
+  // 请求...
+})
+.then(res =&gt; {
+  // 成功处理...
+})
+.catch(err =&gt; {
+  // 失败处理...
+})
+.finally(() =&gt; {
+  // 重置一些状态...
+  showLoading = false;
+});
+</code></pre>
+<h2 id="4">4 静态方法</h2>
+<h3 id="41resolve">4.1 resolve()</h3>
+<p>此方法直接返回一个状态为<code>resolved</code>，值为其参数的<code>Promise</code>。</p>
+<pre><code>Promise.resolve(res);
+--- 等价于
+new Promise(resolve =&gt; resolve(res));
+</code></pre>
+<h3 id="42reject">4.2 reject()</h3>
+<p>此方法直接返回一个状态为<code>rejected</code>，值为其参数的<code>Promise</code>。</p>
+<pre><code>Promise.reject(res);
+--- 等价于
+new Promise((resolve, reject) =&gt; reject(res));
+</code></pre>
+<h3 id="43all">4.3 all()</h3>
+<p>此方法用于将多个<code>Promise</code>实例，包装成一个新的<code>Promise</code>实例。<br />
+其参数为一个数组，每一项应为<code>Promise</code>实例（不是则会使用<code>Promise.resolve</code>进行转化）。</p>
+<p>新<code>Promise</code>的状态取决于传入数组中的每一项的最终状态。<br />
+如果有一项状态变成<code>rejected</code>，新实例则为<code>rejected</code>，值为该项的返回值。<br />
+如果全部项都变成了<code>resolved</code>，新实例则为<code>resolved</code>，值为包含每一项返回值的数组。</p>
+<pre><code>三秒后，打印出：[1, 2, 3]。
+
+let pArr = [1, 2, 3].map(createPromise);
+
+Promise.all(pArr).then(console.log);
+
+function createPromise(num) {
+  return new Promise((resolve, reject) =&gt; {
+    setTimeout(() =&gt; { resolve(num) }, num * 1000);
+  });
+}
+</code></pre>
+<h3 id="44race">4.4 race()</h3>
+<p>此方法与<code>all()</code>基本相同，传入的参数也是一个<code>Promise</code>数组。<br />
+不同的是，新<code>Promise</code>的最终状态是由数组中第一个状态改变的项（成功或失败）决定的。</p>
+<pre><code>一秒后，打印出 1 。
+
+let pArr = [1, 2, 3].map(createPromise);
+
+Promise.race(pArr).then(console.log);
+
+function createPromise(num) {
+  return new Promise((resolve, reject) =&gt; {
+    setTimeout(() =&gt; { resolve(num) }, num * 1000);
+  });
+}
+</code></pre>
+<h2 id="5">5 混合实战</h2>
+<p>在实际项目中，有时需要处理多个相互关联的异步脚本（多为数据请求）。<br />
+<code>ES6</code>之后<code>async</code>函数应该是最灵活方便的途径，<code>Promise</code>在其中扮演基石的角色。<br />
+不过在这一小节，依旧会以<code>Promise</code>作为主要的解决办法进行分析。</p>
+<p>这里是下面需要用到的共同方法。</p>
+<pre><code>// 创建异步。
+function createPromise(name) {
+  return new Promise(resolve =&gt; {
+    setTimeout(() =&gt; resolve({
+      [name]: `Data form ${name}`
+    }), 1000);
+  });
+}
+
+// 异步 A, B, C。
+function A(param) {
+  return createPromise('A');
+}
+function B(param) {
+  return createPromise('B');
+}
+function C(param) {
+  return createPromise('C');
+}
+
+// 并发处理多个独立的异步请求。
+function dealIndependentRequests(qArr, callback) {
+  return new Promise((resolve, reject) =&gt; {
+    let done = false;
+    let resData = [];
+    let leftNum = qArr.length;
+
+    qArr.forEach((q, i) =&gt; {
+      Promise.resolve(q).then(res =&gt; {
+        !done &amp;&amp; dealRequest(res, i, true);
+      }).catch(err =&gt; {
+        !done &amp;&amp; dealRequest(err, i, false);
+      });
+    });
+
+    function dealRequest(res, index, isSuccess) {
+      if (callback) {
+        done = callback(resData, res, index, isSuccess);
+      } else {
+        resData[index] = {
+          res: res,
+          isSuccess: isSuccess
+        };
+      }
+
+      if ( done || !(--leftNum) ) resolve(resData);
+    }
+  }); 
+}
+</code></pre>
+<h3 id="51">5.1</h3>
+<p><strong>5.1.1</strong><br />
+有三个请求数据的异步：A, B, C。<br />
+最终的数据必须同时结合三者的数据计算得出。</p>
+<p>基于要求，直接使用<code>Promise.all</code>进行并发请求，等到所有信息到齐后结束。</p>
+<pre><code>大概一秒后，打印出：Get all data: [{...}, {...}, {...}]。
+
+Promise.all([A(), B(), C()])
+.then(res =&gt; {
+  console.log(`Get all data:`, res);
+})
+.catch(err =&gt; {
+  console.error(err);
+});
+</code></pre>
+<p><strong>5.1.2</strong><br />
+有三个请求数据的异步：A, B, C。<br />
+最终的数据必须同时结合A, B的数据计算得出，C只是修饰数据。</p>
+<p>基于要求，使用<code>Promise.all</code>并发A, B请求，成功后再发C。<br />
+如果前者成功，再看C是否成功，之后使用不同方式处理得到最终数据。</p>
+<pre><code>大概两秒后，打印出：[{…}, {…}] {C: "Data form C"}。
+
+Promise.all([A(), B()])
+.then(res =&gt; {
+  C().then(c =&gt; {
+    console.log(res, c);
+  })
+  .catch(err =&gt; {
+    console.log(res);
+  });
+})
+.catch(err =&gt; {
+  console.error(err);
+});
+</code></pre>
+<p><strong>5.1.3</strong><br />
+有三个请求数据的异步：A, B, C。<br />
+最终的数据必须基于结合A的数据计算得出，B, C起独立的修饰作用。</p>
+<p>基于要求，与上面的处理基本相同。<br />
+不过要在A的回调里同时请求B, C，并使用状态控制变量控制程序的进程。</p>
+<pre><code>大概两秒后，打印出：End {A: "Data form A"} [{…}, {…}]。
+
+A()
+.then(res =&gt; {
+  dealIndependentRequests([B(), C()])
+  .then(subs =&gt; {
+    console.log('End', res, subs);
+  })
+  .catch(err =&gt; {
+    console.log('End', res);
+  });
+})
+.catch(err =&gt; {
+  console.error(err);
+});
+</code></pre>
+<h3 id="52">5.2</h3>
+<p><strong>5.2.1</strong><br />
+有三个请求异步：A, B, C。<br />
+B的请求需要发送A中的a信息。<br />
+C的请求需要发送B中的b信息。</p>
+<p>基于要求，必须逐步请求A, B, C，而且前两者任一出错则停止。</p>
+<pre><code>大概三秒后，打印出：End {C: "Data form C"}。
+
+A()
+.then(res =&gt; {
+  return B(res.a);
+})
+.then(res =&gt; {
+  return C(res.b);  
+})
+.then(res =&gt; {
+  console.log('End', res);
+})
+.catch(err =&gt; {
+  console.log(err);
+});
+</code></pre>
+<p><strong>5.2.2</strong><br />
+有三个请求异步：A, B, C。<br />
+B的请求需要发送A中的a信息，即便A失败也需要发送。<br />
+C的请求需要发送B中的b信息。</p>
+<p>基于要求，与前者基本相同，只是即便A失败了也会继续请求。</p>
+<pre><code>大概三秒后，打印出：End {C: "Data form C"}。
+
+A()
+.then(res =&gt; {
+  return B(res.a);
+})
+.catch(err =&gt; {
+  return B();
+})
+.then(res =&gt; {
+  return C(res.b);  
+})
+.then(res =&gt; {
+  console.log('End', res);
+})
+.catch(err =&gt; {
+  console.log(err);
+});
+</code></pre>
+<h3 id="53">5.3</h3>
+<p><strong>5.3.1</strong><br />
+有三个请求异步：A, B, C。<br />
+需要找出所有异步结果中，包含某值的结果的集合。</p>
+<p>基于要求，并发请求所有数据，一一验证返回符合的结果集。</p>
+<pre><code>大概一秒后，打印出：[{B: "Data form B"}]
+
+dealIndependentRequests([A(), B(), C()], (data, res) =&gt; {
+  if (res.B) data.push(res);
+  return false;
+})
+.then(console.log)
+.catch(console.log);
+</code></pre>
+<p><strong>5.3.2</strong><br />
+有三个请求异步：A, B, C。<br />
+只需要找到一个包含某值的结果。</p>
+<p>基于要求，还是使用并发请求。<br />
+有任一请求符合预期时，结束并返回（暂不涉及取消请求操作）。</p>
+<pre><code>大概一秒后，打印出：[{B: "Data form B"}]
+
+dealIndependentRequests([A(), B(), C()], (data, res) =&gt; {
+  if (res.B) return data.push(res);
+  return false;
+})
+.then(console.log)
+.catch(console.log);
+</code></pre>
+<h1 id="awakeappawakeapp"><a href="#awakeapp"></a>Awake.app</h1>
+<p><a href="http://type.so/object-c/awake-app.html">中文介绍</a></p>
+<p><a href="https://camo.githubusercontent.com/2bb97b776db20dbac366727cf21328d8f8a2c8bb/68747470733a2f2f7261772e6769746875622e636f6d2f7869616f7a692f4177616b652e6170702f6d61737465722f73637265656e73686f742e706e67"><img src="https://camo.githubusercontent.com/2bb97b776db20dbac366727cf21328d8f8a2c8bb/68747470733a2f2f7261772e6769746875622e636f6d2f7869616f7a692f4177616b652e6170702f6d61737465722f73637265656e73686f742e706e67" alt="screenshot" /></a></p>
+<p>An app for mac osx to prevent sleeping; inspired by Caffeine.</p>
+<ol>
+<li>left click to toggle "should sleep status"</li>
+<li>right click for menu</li>
+</ol>
+<p>"run at login" will not take effect unless you put this app in the <code>/Applications</code> directory.</p>
+<h3 id="downloaddownload"><a href="#download"></a>download</h3>
+<p><a href="https://github.com/xiaozi/Awake.app/releases">https://github.com/xiaozi/Awake.app/releases</a></p>
+<h3 id="applescriptsupportedapplescriptsupported"><a href="#apple-script-supported"></a>apple script supported</h3>
+<p>tell application "Awake"
+    turn on for 1
+    -- turn off
+end tell</p>
