@@ -15,7 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.6.0",
-    "axios": "^0.17.1",
+    "axios": "^0.18.0",
     "cheerio": "^1.0.0-rc.2",
     "commander": "^2.15.1",
     "express": "^4.16.2",

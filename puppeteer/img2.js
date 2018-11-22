@@ -19,6 +19,7 @@ async function getTotal() {
             }
         })
     });
+    console.log(imgUrls)
     imgUrls.forEach((urlObj,cindex)=>{
        let url = urlObj.imgUrl;
        let alt = urlObj.imgAlt;
