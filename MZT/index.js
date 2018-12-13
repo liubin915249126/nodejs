@@ -55,7 +55,7 @@ async function detail(){
 function loadImg(url,target) {
     let typeArr = url.split('.');
     let type = typeArr[typeArr.length-1];
-    axios.get("https://i.meizitu.net/2018/11/17a02.jpg",{responseType: 'stream'})
+    axios.get(url,{responseType: 'stream'})
         .then((res)=>{
             let path = __dirname+'/dist/';
             if(!fs.exists(path)){
@@ -64,7 +64,7 @@ function loadImg(url,target) {
                 });
             }
             
-        })
+        }).catch((err)=>console.log(err))
 }
 
 detail()
