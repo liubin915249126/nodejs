@@ -1,11 +1,11 @@
 // babel解析
-require( "babel-register" )
-require( "babel-core" )
+require( "@babel/register" )
+require( "@babel/core" )
     .transform( "code", {
-        presets: [ [ require('babel-preset-latest-node').default, {
+        presets: [ [ require('babel-preset-latest-node'), {
             target: 'current'
         } ] ]
     } );
-require( 'babel-polyfill' )
+require( '@babel/polyfill' )
 
 require('./src')

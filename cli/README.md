@@ -1,3 +1,5 @@
+#### 
+
 #### commander
 >
     Option() ——> 初始化自定义参数对象，设置“关键字”和“描述”
@@ -19,6 +21,8 @@
     Command#help()
 >
 
-yarn add -D babel-cli babel-eslint babel-plugin-transform-es2015-modules-commonjs babel-preset-latest-node
-yarn add -D babel-register babel-core babel-polyfill
-// yarn add -D babel-core@latest babel-loader@latest
+yarn add --dev @babel/core babel-preset-latest-node
+yarn add --dev @babel/register  
+yarn add --dev @babel/polyfill
+yarn add --dev @babel/cli
+yarn add --dev babel-preset-env
