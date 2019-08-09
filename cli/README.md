@@ -26,3 +26,5 @@ yarn add --dev @babel/register
 yarn add --dev @babel/polyfill
 yarn add --dev @babel/cli
 yarn add --dev babel-preset-env
+
+https://www.jianshu.com/p/1c5d086c68fa
