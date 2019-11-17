@@ -1,8 +1,6 @@
 const creatPromise = (num)=>{
     return new Promise((resolve, reject)=>{resolve(num)})
 }
-
-
 const co = require("co");
 function* foo(x) {
   console.log(1111);
@@ -17,4 +15,11 @@ function* foo(x) {
 // console.log("inner");
 // console.log(it.next(12)); // => {value: 8, done: false}
 // console.log(it.next(13)); // => {value: 42, done: true}
-co(foo(5))
+
+
+function wrap(){
+  return co(foo(5))
+}
+console.log('inner')
+wrap()
+console.log('outer')
