@@ -15,10 +15,10 @@ result1.value
     return data.json();
   })
   .then(function(data) {
-    console.log(111,data)
     return g.next(data).value;
   })
   .then(function(data) {
+    console.log(111,data)
     return data.json();
   })
   .then(function(data) {
