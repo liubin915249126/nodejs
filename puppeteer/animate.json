@@ -1,0 +1,179 @@
+[
+    {
+        "title": "Attention seekers",
+        "children": [
+            "bounce",
+            "flash",
+            "pulse",
+            "rubberBand",
+            "shakeX",
+            "shakeY",
+            "headShake",
+            "swing",
+            "tada",
+            "wobble",
+            "jello",
+            "heartBeat"
+        ]
+    },
+    {
+        "title": "Back entrances",
+        "children": [
+            "backInDown",
+            "backInLeft",
+            "backInRight",
+            "backInUp"
+        ]
+    },
+    {
+        "title": "Back exits",
+        "children": [
+            "backOutDown",
+            "backOutLeft",
+            "backOutRight",
+            "backOutUp"
+        ]
+    },
+    {
+        "title": "Bouncing entrances",
+        "children": [
+            "bounceIn",
+            "bounceInDown",
+            "bounceInLeft",
+            "bounceInRight",
+            "bounceInUp"
+        ]
+    },
+    {
+        "title": "Bouncing exits",
+        "children": [
+            "bounceOut",
+            "bounceOutDown",
+            "bounceOutLeft",
+            "bounceOutRight",
+            "bounceOutUp"
+        ]
+    },
+    {
+        "title": "Fading entrances",
+        "children": [
+            "fadeIn",
+            "fadeInDown",
+            "fadeInDownBig",
+            "fadeInLeft",
+            "fadeInLeftBig",
+            "fadeInRight",
+            "fadeInRightBig",
+            "fadeInUp",
+            "fadeInUpBig",
+            "fadeInTopLeft",
+            "fadeInTopRight",
+            "fadeInBottomLeft",
+            "fadeInBottomRight"
+        ]
+    },
+    {
+        "title": "Fading exits",
+        "children": [
+            "fadeOut",
+            "fadeOutDown",
+            "fadeOutDownBig",
+            "fadeOutLeft",
+            "fadeOutLeftBig",
+            "fadeOutRight",
+            "fadeOutRightBig",
+            "fadeOutUp",
+            "fadeOutUpBig",
+            "fadeOutTopLeft",
+            "fadeOutTopRight",
+            "fadeOutBottomRight",
+            "fadeOutBottomLeft"
+        ]
+    },
+    {
+        "title": "Flippers",
+        "children": [
+            "flip",
+            "flipInX",
+            "flipInY",
+            "flipOutX",
+            "flipOutY"
+        ]
+    },
+    {
+        "title": "Lightspeed",
+        "children": [
+            "lightSpeedInRight",
+            "lightSpeedInLeft",
+            "lightSpeedOutRight",
+            "lightSpeedOutLeft"
+        ]
+    },
+    {
+        "title": "Rotating entrances",
+        "children": [
+            "rotateIn",
+            "rotateInDownLeft",
+            "rotateInDownRight",
+            "rotateInUpLeft",
+            "rotateInUpRight"
+        ]
+    },
+    {
+        "title": "Rotating exits",
+        "children": [
+            "rotateOut",
+            "rotateOutDownLeft",
+            "rotateOutDownRight",
+            "rotateOutUpLeft",
+            "rotateOutUpRight"
+        ]
+    },
+    {
+        "title": "Specials",
+        "children": [
+            "hinge",
+            "jackInTheBox",
+            "rollIn",
+            "rollOut"
+        ]
+    },
+    {
+        "title": "Zooming entrances",
+        "children": [
+            "zoomIn",
+            "zoomInDown",
+            "zoomInLeft",
+            "zoomInRight",
+            "zoomInUp"
+        ]
+    },
+    {
+        "title": "Zooming exits",
+        "children": [
+            "zoomOut",
+            "zoomOutDown",
+            "zoomOutLeft",
+            "zoomOutRight",
+            "zoomOutUp"
+        ]
+    },
+    {
+        "title": "Sliding entrances",
+        "children": [
+            "slideInDown",
+            "slideInLeft",
+            "slideInRight",
+            "slideInUp"
+        ]
+    },
+    {
+        "title": "Sliding exits",
+        "children": [
+            "slideOutDown",
+            "slideOutLeft",
+            "slideOutRight",
+            "slideOutUp"
+        ]
+    }
+]

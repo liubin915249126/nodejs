@@ -10,6 +10,8 @@ async function getTotal() {
     const page = await browser.newPage();
     await page.goto(singleUrl);
     const imgUrls = await page.evaluate(e=>{
+        // const $ = document.querySelector
+        // const $$ = document.querySelectorAll
         let imgs = Array.from($('#picture').find("img"))
         return imgUrls = imgs.map((item)=>{
             let imgUrl = $(item).attr('src');
