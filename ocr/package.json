@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "baidu-aip-sdk": "^2.4.6",
     "tesseract.js": "^2.1.1"
   }
 }
