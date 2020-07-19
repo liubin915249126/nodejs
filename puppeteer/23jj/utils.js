@@ -66,6 +66,8 @@ const saveImg = async (url, title, index) => {
         // await saveFile(path + "/" + index + "." + type,res.data)
         res.data.pipe(fs.createWriteStream(path + "/" + index + "." + type));
       });
+    }else{
+        res.data.pipe(fs.createWriteStream(path + "/" + index + "." + type));
     }
   });
 };
