@@ -52,3 +52,7 @@ child_process模块给予node任意创建子进程的能力
 与另外三个不同的是它开启的是一个node进程，执行的只能是js文件。
 并通过建立 IPC 通讯通道来调用指定的模块，该通道允许父进程与子进程之间相互发送信息。
 [example](../test/fork.js)
+
+
+[参考文献](https://www.cnblogs.com/cangqinglang/p/9886657.html)
+[nodejs.cn](http://nodejs.cn/)
