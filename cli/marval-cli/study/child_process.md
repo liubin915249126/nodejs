@@ -29,3 +29,22 @@ child_process模块给予node任意创建子进程的能力
     console.log(stdout);
     });
 ```
+
+#### child_process.spawn(command[, args][, options])
+    仅仅执行一个shell命令，不需要获取执行结果
+```js
+    const { spawn } = require('child_process');
+    const ls = spawn('ls', ['-lh', '/usr']);
+
+    ls.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+    });
+
+    ls.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+    });
+
+    ls.on('close', (code) => {
+    console.log(`子进程退出，退出码 ${code}`);
+    });
+```    
