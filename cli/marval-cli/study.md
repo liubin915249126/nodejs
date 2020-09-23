@@ -14,6 +14,7 @@
    - 递归获取文件列表
 - [fs-extra](https://www.npmjs.com/package/fs-extra)
    - enhance of native fs
-- [commander](https://github.com/tj/commander.js/blob/master/Readme_zh-CN.md)    
+- [commander](https://github.com/tj/commander.js/blob/master/Readme_zh-CN.md)
+  - 用户接受命令行的参数 
 - [inquirer](https://www.npmjs.com/package/inquirer)   
    - strives to be an easily embeddable and beautiful command line interface for Node.js
