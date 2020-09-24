@@ -2,7 +2,6 @@
 #### node api
 - [child_process](./study/child_process.md)
 - [path](./study/path.md)
-- [process](./study/process.md)
 
 
 #### 第三方api
