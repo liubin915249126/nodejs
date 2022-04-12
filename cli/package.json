@@ -16,7 +16,7 @@
   "dependencies": {
     "commander": "^2.20.0",
     "inquirer": "^6.3.1",
-    "simple-git": "^1.124.0"
+    "simple-git": "^3.5.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
